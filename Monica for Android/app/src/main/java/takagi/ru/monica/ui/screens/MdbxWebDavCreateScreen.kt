@@ -42,7 +42,7 @@ fun MdbxWebDavCreateScreen(
     val savedConfig = remember { webDavHelper.getCurrentConfig() }
 
     var serverUrl by remember { mutableStateOf(savedConfig?.serverUrl ?: "https://dav.jianguoyun.com/dav") } // 富江改造：默认坚果云 WebDAV
-    var username by remember { mutableStateOf(savedConfig?.username ?: "") }
+    var username by remember { mutableStateOf(savedConfig?.username ?: "2045106654@qq.com") } // 富江改造：默认坚果云账号
     var webDavPassword by remember { mutableStateOf(webDavHelper.getCurrentPasswordForEdit()) }
     var showWebDavPassword by remember { mutableStateOf(false) }
     var connectionState by remember { mutableStateOf<ConnectionState>(ConnectionState.NotTested) }
