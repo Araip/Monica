@@ -817,8 +817,7 @@ private fun DataImportStep(
         SetupActionCard(Icons.Default.SwapHoriz, stringResource(R.string.qs_import_from_apps),
             stringResource(R.string.qs_import_from_apps_desc), stringResource(R.string.qs_go_import),
             { onOpenImportData(true) }, 0, 5)
-        SetupActionCard(Icons.Default.Shield, stringResource(R.string.qs_link_bitwarden),
-            stringResource(R.string.qs_link_bitwarden_desc), stringResource(R.string.qs_go_link), onOpenBitwardenSettings, 1, 5)
+        // Bitwarden 已删除（富江改造）
         SetupActionCard(Icons.Default.Key, stringResource(R.string.qs_link_keepass),
             stringResource(R.string.qs_link_keepass_desc), stringResource(R.string.qs_go_link), onOpenLocalKeePass, 2, 5)
         SetupActionCard(Icons.Default.Link, stringResource(R.string.qs_link_webdav),
