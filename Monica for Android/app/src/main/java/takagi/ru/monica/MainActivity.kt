@@ -375,6 +375,9 @@ class MainActivity : BaseMonicaActivity() {
     private var nfcCardEntry: takagi.ru.monica.nfc.card.NfcCardEntryController? = null
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private val externalTotpImportController = ExternalTotpImportController()
+    // 富江改造：提升为字段，供下拉静默 WebDAV 备份使用
+    private lateinit var repository: PasswordRepository
+    private lateinit var secureItemRepository: takagi.ru.monica.repository.SecureItemRepository
 
     companion object {
         private const val TAG = "MainActivity"
@@ -474,7 +477,7 @@ class MainActivity : BaseMonicaActivity() {
             database = database,
             securityManager = securityManager
         )
-        val repository = PasswordRepository(
+        repository = PasswordRepository(
             database.passwordEntryDao(), 
             database.categoryDao(),
             database.bitwardenFolderDao(),
@@ -484,7 +487,7 @@ class MainActivity : BaseMonicaActivity() {
             database.passwordHistoryDao(),
             mdbxRepository = mdbxRepository
         )
-        val secureItemRepository = takagi.ru.monica.repository.SecureItemRepository(
+        secureItemRepository = takagi.ru.monica.repository.SecureItemRepository(
             database.secureItemDao(),
             mdbxRepository,
             securityManager::decryptDataIfMonicaCiphertext,
@@ -1496,15 +1499,8 @@ fun MonicaContent(
                         launchSingleTop = true
                     }
                 },
-                onNavigateToMdbxCommitHistory = { databaseId ->
-                    navController.navigate(
-                        Screen.MdbxManager.createRoute(
-                            databaseId = databaseId,
-                            page = Screen.MdbxManager.PAGE_COMMIT_HISTORY
-                        )
-                    ) {
-                        launchSingleTop = true
-                    }
+                onNavigateToMdbxCommitHistory = { _ ->
+                    // 富江改造：MDBX 已删除，空操作
                 },
                 onNavigateToPasskeyDetail = { recordId ->
                     navController.navigate(Screen.PasskeyDetail.createRoute(recordId))
@@ -1531,8 +1527,28 @@ fun MonicaContent(
                     navController.navigate(Screen.SyncBackup.route)
                 },
                 onPullTriggerWebDavSync = {
-                    // 富江改造：主页下拉=直接进 WebDAV 同步页
-                    navController.navigate(Screen.WebDavBackup.route)
+                    // 富江改造：主页下拉=静默执行 WebDAV 备份 + 吐司提示
+                    runCatching {
+                        takagi.ru.monica.transfer.startWebDavBackup(
+                            this@MainActivity,
+                            takagi.ru.monica.data.BackupPreferences(),
+                            emptyList(),
+                            repository,
+                            secureItemRepository
+                        )
+                    }.onSuccess { started ->
+                        android.widget.Toast.makeText(
+                            this@MainActivity,
+                            if (started) "WebDAV 备份已开始" else "WebDAV 备份已在进行中",
+                            android.widget.Toast.LENGTH_SHORT
+                        ).show()
+                    }.onFailure { e ->
+                        android.widget.Toast.makeText(
+                            this@MainActivity,
+                            "WebDAV 备份失败: ${e.message ?: "未知错误"}",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
                 },
                 onNavigateToAutofill = {
                     navController.navigate(Screen.AutofillSettings.route)
@@ -3104,12 +3120,6 @@ fun MonicaContent(
                 onNavigateToPageCustomization = {
                     navController.navigate(Screen.PageAdjustmentCustomization.route)
                 },
-                onNavigateToMdbx = {
-                    navController.navigate(Screen.MdbxManager.createRoute()) {
-                        popUpTo(Screen.MdbxManager.routePattern) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
                 onClearAllData = { passwords, totp, notes, documents, bankCards, history ->
                     clearDataViewModel.start(takagi.ru.monica.data.ClearDataSelection(
                         passwords, totp, notes, documents, bankCards, history,
@@ -3388,7 +3398,7 @@ fun MonicaContent(
                 onNavigateBack = { navController.popBackStack() },
                 onOpen = { id, tokenId -> navController.navigate(Screen.ApiTokenDetail.createRoute(id, tokenId)) },
                 onCreate = { id -> navController.navigate(Screen.AddEditApiToken.createRoute(id)) },
-                onManageDatabases = { navController.navigate(Screen.MdbxManager.createRoute()) },
+                onManageDatabases = { /* 富江改造：MDBX 已删除 */ },
             )
         }
 
@@ -3450,7 +3460,7 @@ fun MonicaContent(
                         }
                     }
                 },
-                onManageDatabases = { navController.navigate(Screen.MdbxManager.createRoute()) },
+                onManageDatabases = { /* 富江改造：MDBX 已删除 */ },
             )
         }
 
@@ -3693,7 +3703,7 @@ fun MonicaContent(
                     navController.navigate(Screen.AutofillSettings.route)
                 },
                 onOpenBitwardenSettings = {
-                    navController.navigate(Screen.BitwardenSettings.route)
+                    // 富江改造：Bitwarden 已删除
                 },
                 onOpenWebDavBackup = {
                     navController.navigate(Screen.WebDavBackup.route)
@@ -3727,13 +3737,7 @@ fun MonicaContent(
                 onNavigateBack = {
                     navController.popBackStack()
                 },
-                onNavigateToLogs = { navController.navigate(Screen.DeveloperLogs.route) { launchSingleTop = true } },
-                onNavigateToMdbx = {
-                    navController.navigate(Screen.MdbxManager.createRoute()) {
-                        popUpTo(Screen.MdbxManager.routePattern) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
+                onNavigateToLogs = { navController.navigate(Screen.DeveloperLogs.route) { launchSingleTop = true } }
             )
             }
         }
@@ -3992,23 +3996,12 @@ fun MonicaContent(
                 onNavigateToImportData = {
                     navController.navigate(Screen.ImportData.route)
                 },
-                onNavigateToFolderBackup = { navController.navigate(Screen.FolderBackup.route) },
                 onNavigateToWebDav = {
                     navController.navigate(Screen.WebDavBackup.route)
                 },
                 onNavigateToLocalKeePass = {
                     navController.navigate(Screen.LocalKeePass.route)
                 },
-                onNavigateToMdbx = {
-                    navController.navigate(Screen.MdbxManager.createRoute()) {
-                        popUpTo(Screen.MdbxManager.routePattern) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                },
-                onNavigateToBitwarden = {
-                    navController.navigate(Screen.BitwardenSettings.route)
-                },
-                onNavigateToLanSync = { navController.navigate(Screen.LanSync.route) },
                 isPlusActivated = settingsViewModel.settings.collectAsState().value.isPlusActivated
             )
             }
@@ -4026,8 +4019,9 @@ fun MonicaContent(
                 initialDatabaseKey = entry.arguments?.getString("database"),
                 mdbxViewModel = mdbxViewModel, keepassViewModel = localKeePassViewModel,
                 onManageDatabase = { database ->
-                    if (database.mdbxId != null) navController.navigate(Screen.MdbxManager.createRoute(databaseId = database.databaseId))
-                    else navController.navigate(Screen.LocalKeePass.route)
+                    if (database.mdbxId != null) {
+                        // 富江改造：MDBX 已删除
+                    } else navController.navigate(Screen.LocalKeePass.route)
                 },
                 onBack = { navController.popBackStack() },
                 onNativeEntry = { route ->
