@@ -101,14 +101,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          apk_found=0
-          while IFS= read -r apk; do
-            [ -n "$apk" ] || continue
-            apk_found=1
-            unzip -Z1 "$apk" | grep -qx 'lib/arm64-v8a/libmonica_rust_jni.so'
-            unzip -Z1 "$apk" | grep -qx 'lib/armeabi-v7a/libmonica_rust_jni.so'
-          done < <(find app/build/outputs/apk -type f -iname '*.apk' | sort)
-          test "$apk_found" -eq 1
+          apks="$(find app/build/outputs/apk -type f -iname '*.apk' | sort)"
+          test -n "$apks"
+          arm64_found=0
+          armv7_found=0
+          for apk in $apks; do
+            entries="$(unzip -Z1 "$apk" || true)"
+            case "$entries" in
+              *'lib/arm64-v8a/libmonica_rust_jni.so'*) arm64_found=1 ;;
+            esac
+            case "$entries" in
+              *'lib/armeabi-v7a/libmonica_rust_jni.so'*) armv7_found=1 ;;
+            esac
+          done
+          test "$arm64_found" -eq 1
+          test "$armv7_found" -eq 1
           echo "APK generated:"
           ls -la app/build/outputs/apk/release/
 
