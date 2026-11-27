@@ -1625,7 +1625,7 @@ class WebDavHelper(
             includeTrash = prefs.getBoolean(KEY_BACKUP_INCLUDE_TRASH, true),
             includeTrashAndHistory = prefs.getBoolean(KEY_BACKUP_INCLUDE_TRASH_AND_HISTORY, true),
             includeWebDavConfig = prefs.getBoolean(KEY_BACKUP_INCLUDE_WEBDAV_CONFIG, false),
-            includeLocalKeePass = prefs.getBoolean(KEY_BACKUP_INCLUDE_LOCAL_KEEPASS, false),
+            includeLocalKeePass = prefs.getBoolean(KEY_BACKUP_INCLUDE_LOCAL_KEEPASS, true), // 富江改造：默认开启 kdbx 备份
             encryptionFormat = BackupEncryptionFormat.valueOf(prefs.getString(KEY_BACKUP_ENCRYPTION_FORMAT,
                 BackupEncryptionFormat.COMPATIBLE_V1.name) ?: BackupEncryptionFormat.COMPATIBLE_V1.name)
         )
