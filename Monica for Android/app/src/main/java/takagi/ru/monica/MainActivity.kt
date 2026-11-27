@@ -370,6 +370,40 @@ private fun AnimatedContentScope.AddEditRouteContent(
     }
 }
 
+/** 富江改造：全局桥，供顶层 Composable 下拉回调触发静默 WebDAV 备份 */
+object FujiangBridge {
+    var context: android.content.Context? = null
+    var repository: PasswordRepository? = null
+    var secureItemRepository: takagi.ru.monica.repository.SecureItemRepository? = null
+
+    fun triggerSilentWebDavBackup() {
+        val ctx = context ?: return
+        val repo = repository ?: return
+        val srepo = secureItemRepository ?: return
+        runCatching {
+            takagi.ru.monica.transfer.startWebDavBackup(
+                ctx,
+                takagi.ru.monica.data.BackupPreferences(),
+                emptyList(),
+                repo,
+                srepo
+            )
+        }.onSuccess { started ->
+            android.widget.Toast.makeText(
+                ctx,
+                if (started) "WebDAV 备份已开始" else "WebDAV 备份已在进行中",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }.onFailure { e ->
+            android.widget.Toast.makeText(
+                ctx,
+                "WebDAV 备份失败: ${e.message ?: "未知错误"}",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+}
+
 class MainActivity : BaseMonicaActivity() {
     private var secureStartupReady = false
     private var nfcCardEntry: takagi.ru.monica.nfc.card.NfcCardEntryController? = null
@@ -378,31 +412,6 @@ class MainActivity : BaseMonicaActivity() {
     // 富江改造：提升为字段，供下拉静默 WebDAV 备份使用
     private lateinit var repository: PasswordRepository
     private lateinit var secureItemRepository: takagi.ru.monica.repository.SecureItemRepository
-
-    // 富江改造：下拉静默 WebDAV 备份（封装避免 Compose lambda 标签问题）
-    private fun triggerSilentWebDavBackup() {
-        runCatching {
-            takagi.ru.monica.transfer.startWebDavBackup(
-                this,
-                takagi.ru.monica.data.BackupPreferences(),
-                emptyList(),
-                repository,
-                secureItemRepository
-            )
-        }.onSuccess { started ->
-            android.widget.Toast.makeText(
-                this,
-                if (started) "WebDAV 备份已开始" else "WebDAV 备份已在进行中",
-                android.widget.Toast.LENGTH_SHORT
-            ).show()
-        }.onFailure { e ->
-            android.widget.Toast.makeText(
-                this,
-                "WebDAV 备份失败: ${e.message ?: "未知错误"}",
-                android.widget.Toast.LENGTH_LONG
-            ).show()
-        }
-    }
 
     companion object {
         private const val TAG = "MainActivity"
@@ -518,6 +527,10 @@ class MainActivity : BaseMonicaActivity() {
             securityManager::decryptDataIfMonicaCiphertext,
             takagi.ru.monica.attachments.repository.AttachmentRepository(database.attachmentDao())
         )
+        // 富江改造：把仓库灌进全局桥，供下拉静默 WebDAV 备份使用
+        FujiangBridge.context = applicationContext
+        FujiangBridge.repository = repository
+        FujiangBridge.secureItemRepository = secureItemRepository
         val settingsManager = SettingsManager(this)
 
         // Initialize auto backup if enabled (deferred to reduce cold-start contention)
@@ -1553,7 +1566,7 @@ fun MonicaContent(
                 },
                 onPullTriggerWebDavSync = {
                     // 富江改造：主页下拉=静默执行 WebDAV 备份 + 吐司提示
-                    triggerSilentWebDavBackup()
+                    FujiangBridge.triggerSilentWebDavBackup()
                 },
                 onNavigateToAutofill = {
                     navController.navigate(Screen.AutofillSettings.route)
