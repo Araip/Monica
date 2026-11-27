@@ -19,7 +19,7 @@ class UpdatePreferences(context: Context) {
         withContext(Dispatchers.IO) {
             val preferences = preferences()
             UpdatePreferencesState(
-                autoCheckEnabled = preferences.getBoolean(AUTO_CHECK, true),
+                autoCheckEnabled = false, // 自动检查更新已禁用（富江改造）
                 lastAttemptAtMillis = preferences.getLong(LAST_ATTEMPT, 0L),
                 skippedReleaseIdentity = preferences.getString(SKIPPED_RELEASE, null),
             )

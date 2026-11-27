@@ -137,14 +137,11 @@ import takagi.ru.monica.ui.screens.PermissionManagementScreen
 import takagi.ru.monica.ui.screens.MonicaPlusScreen
 import takagi.ru.monica.ui.screens.PaymentScreen
 import takagi.ru.monica.ui.screens.SupportAuthorScreen
-import takagi.ru.monica.ui.screens.OneDriveBackupScreen
-import takagi.ru.monica.ui.screens.WebDavBackupScreen
 import takagi.ru.monica.ui.screens.MdbxManagerScreen
+import takagi.ru.monica.ui.screens.WebDavBackupScreen
 import takagi.ru.monica.ui.screens.MdbxManagerInitialPage
 import takagi.ru.monica.ui.screens.MdbxLocalCreateScreen
 import takagi.ru.monica.ui.screens.MdbxLocalOpenScreen
-import takagi.ru.monica.ui.screens.MdbxOneDriveCreateScreen
-import takagi.ru.monica.ui.screens.MdbxOneDriveOpenScreen
 import takagi.ru.monica.ui.screens.MdbxWebDavCreateScreen
 import takagi.ru.monica.ui.screens.MdbxWebDavOpenScreen
 import takagi.ru.monica.ui.screens.KeePassKdbxViewModel
@@ -437,7 +434,7 @@ class MainActivity : BaseMonicaActivity() {
                 // Availability was checked inside the bounded worker. A late provider call may
                 // still hold the recovery lock; never reacquire it on the UI thread after timeout.
                 val canRecover = startup.recoveryAvailable
-                window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SECURE)
+                // 富江改造：移除了 FLAG_SECURE 防截屏
                 setContent {
                     takagi.ru.monica.ui.theme.MonicaTheme {
                         takagi.ru.monica.ui.screens.SecureStorageRecoveryScreen(
@@ -854,8 +851,8 @@ fun MonicaApp(
             androidx.compose.runtime.CompositionLocalProvider(
                 takagi.ru.monica.ui.theme.LocalPowerSavePolicy provides powerSavePolicy
             ) {
-            // 应用防截屏保护
-            ScreenshotProtection(enabled = settings.screenshotProtectionEnabled)
+            // 应用防截屏保护（富江改造：已禁用）
+            ScreenshotProtection(enabled = false)
 
             Surface(
                 modifier = Modifier.fillMaxSize(),
@@ -1275,7 +1272,7 @@ fun MonicaContent(
         takagi.ru.monica.update.AppUpdateHost(
             controller = appUpdateController,
             eligible = settingsLoaded && isAuthenticated && !shouldRequireAuthentication && !isOnAuthRoute,
-            allowAutomatic = currentRoute == Screen.Main.routePattern && settings.quickSetupCompleted,
+            allowAutomatic = false, // 富江改造：彻底禁用自动检查更新
         )
         takagi.ru.monica.ui.common.layout.AdaptiveAppLayout(
             wideContent = currentRoute == Screen.Main.routePattern || currentRoute == Screen.Login.route
@@ -1532,6 +1529,10 @@ fun MonicaContent(
                 },
                 onNavigateToSyncBackup = {
                     navController.navigate(Screen.SyncBackup.route)
+                },
+                onPullTriggerWebDavSync = {
+                    // 富江改造：主页下拉=直接进 WebDAV 同步页
+                    navController.navigate(Screen.WebDavBackup.route)
                 },
                 onNavigateToAutofill = {
                     navController.navigate(Screen.AutofillSettings.route)
@@ -3323,22 +3324,6 @@ fun MonicaContent(
         }
 
         composable(
-            route = Screen.OneDriveBackup.route,
-            enterTransition = { easyNotesScreenEnter() },
-            exitTransition = { easyNotesScreenExit() },
-            popEnterTransition = { easyNotesScreenEnter() },
-            popExitTransition = { easyNotesScreenExit() }
-        ) {
-            OneDriveBackupScreen(
-                passwordRepository = repository,
-                secureItemRepository = secureItemRepository,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        composable(
             route = Screen.MdbxManager.routePattern,
             arguments = listOf(
                 navArgument(Screen.MdbxManager.ARG_DATABASE_ID) {
@@ -3386,12 +3371,6 @@ fun MonicaContent(
                 },
                 onNavigateToWebDavOpen = {
                     navController.navigate(Screen.MdbxWebDavOpen.route)
-                },
-                onNavigateToOneDriveCreate = {
-                    navController.navigate(Screen.MdbxOneDriveCreate.route)
-                },
-                onNavigateToOneDriveOpen = {
-                    navController.navigate(Screen.MdbxOneDriveOpen.route)
                 }
             )
         }
@@ -3522,32 +3501,6 @@ fun MonicaContent(
             popExitTransition = { easyNotesScreenExit() }
         ) {
             MdbxWebDavOpenScreen(
-                viewModel = mdbxViewModel,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(
-            route = Screen.MdbxOneDriveCreate.route,
-            enterTransition = { easyNotesScreenEnter() },
-            exitTransition = { easyNotesScreenExit() },
-            popEnterTransition = { easyNotesScreenEnter() },
-            popExitTransition = { easyNotesScreenExit() }
-        ) {
-            MdbxOneDriveCreateScreen(
-                viewModel = mdbxViewModel,
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-
-        composable(
-            route = Screen.MdbxOneDriveOpen.route,
-            enterTransition = { easyNotesScreenEnter() },
-            exitTransition = { easyNotesScreenExit() },
-            popEnterTransition = { easyNotesScreenEnter() },
-            popExitTransition = { easyNotesScreenExit() }
-        ) {
-            MdbxOneDriveOpenScreen(
                 viewModel = mdbxViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -4042,9 +3995,6 @@ fun MonicaContent(
                 onNavigateToFolderBackup = { navController.navigate(Screen.FolderBackup.route) },
                 onNavigateToWebDav = {
                     navController.navigate(Screen.WebDavBackup.route)
-                },
-                onNavigateToOneDrive = {
-                    navController.navigate(Screen.OneDriveBackup.route)
                 },
                 onNavigateToLocalKeePass = {
                     navController.navigate(Screen.LocalKeePass.route)

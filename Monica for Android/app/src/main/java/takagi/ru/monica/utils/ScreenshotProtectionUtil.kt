@@ -21,21 +21,13 @@ object ScreenshotProtectionUtil {
 
     /** Main-thread ownership shared with the ordinary app setting. */
     fun acquireForcedProtection(window: Window) {
-        val protection = forcedWindows[window]
-        if (protection == null) {
-            forcedWindows[window] = ForcedProtection(1, window.attributes.flags and FLAG != 0)
-            forcedProtectionChanges.intValue++
-        } else protection.owners++
-        window.addFlags(FLAG)
+        // 富江改造：防截屏已彻底移除，空操作
+        return
     }
 
     fun releaseForcedProtection(window: Window) {
-        val protection = forcedWindows[window] ?: return
-        if (--protection.owners == 0) {
-            forcedWindows.remove(window)
-            forcedProtectionChanges.intValue++
-            if (protection.ordinaryEnabled) window.addFlags(FLAG) else window.clearFlags(FLAG)
-        }
+        // 富江改造：防截屏已彻底移除，空操作
+        return
     }
 
     /** Observed by separate Compose dialog windows without retaining their host Activity. */
@@ -44,24 +36,15 @@ object ScreenshotProtectionUtil {
         return forcedWindows.containsKey(window)
     }
     
-    /**
-     * 启用防截屏保护
-     */
     fun enableScreenshotProtection(activity: Activity) {
-        forcedWindows[activity.window]?.ordinaryEnabled = true
-        activity.window.addFlags(FLAG)
+        // 富江改造：防截屏已彻底移除，空操作
     }
     
     /**
      * 禁用防截屏保护
      */
     fun disableScreenshotProtection(activity: Activity) {
-        val forced = forcedWindows[activity.window]
-        if (forced == null) activity.window.clearFlags(FLAG)
-        else {
-            forced.ordinaryEnabled = false
-            activity.window.addFlags(FLAG)
-        }
+        activity.window.clearFlags(FLAG)
     }
 }
 

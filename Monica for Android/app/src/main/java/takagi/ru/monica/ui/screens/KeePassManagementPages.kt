@@ -81,7 +81,8 @@ internal fun KeePassManagementHub(
             DatabaseManagementActionGroup(
                 title = stringResource(R.string.storage_location),
                 actions = KeePassManagementSource.entries.filter {
-                    it != KeePassManagementSource.GOOGLE_DRIVE || googleDriveEnabled || counts.getValue(it) > 0
+                    (it != KeePassManagementSource.GOOGLE_DRIVE || googleDriveEnabled || counts.getValue(it) > 0) &&
+                        it != KeePassManagementSource.ONEDRIVE // OneDrive 已移除（富江改造）
                 }.map { source ->
                     DatabaseManagementAction(source.icon, source.title(),
                         { onSourceSelected(source) }, stringResource(R.string.mdbx_ui_database_count, counts.getValue(source)))

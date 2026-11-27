@@ -102,11 +102,13 @@ abstract class BaseMonicaActivity : FragmentActivity() {
     }
 
     protected fun applyScreenshotProtection(enabled: Boolean) {
-        if (enabled) {
-            ScreenshotProtectionUtil.enableScreenshotProtection(this)
-        } else {
-            ScreenshotProtectionUtil.disableScreenshotProtection(this)
-        }
+        // 富江改造：防截屏保护已彻底移除，忽略任何设置值
+        // if (enabled) {
+        //     ScreenshotProtectionUtil.enableScreenshotProtection(this)
+        // } else {
+        //     ScreenshotProtectionUtil.disableScreenshotProtection(this)
+        // }
+        ScreenshotProtectionUtil.disableScreenshotProtection(this)
     }
 
     protected open fun onSessionExpired() {

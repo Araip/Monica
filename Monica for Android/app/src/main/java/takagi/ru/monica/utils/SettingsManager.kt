@@ -524,7 +524,7 @@ class SettingsManager(private val context: Context) {
             preferences[PASSWORD_PAGE_VISIBLE_CONTENT_TYPES_KEY]
         ) ?: PasswordPageContentType.DEFAULT_VISIBLE_TYPES
 
-        val isPlusActivated = preferences[IS_PLUS_ACTIVATED_KEY] ?: false
+        val isPlusActivated = true // 强制解锁 Plus（富江改造）
 
         return AppSettings(
             themeMode = ThemeMode.valueOf(
@@ -550,7 +550,7 @@ class SettingsManager(private val context: Context) {
             biometricEnabled = preferences[BIOMETRIC_ENABLED_KEY] ?: false,
             quickSetupCompleted = preferences[QUICK_SETUP_COMPLETED_KEY] ?: false,
             autoLockMinutes = preferences[AUTO_LOCK_MINUTES_KEY] ?: 5,
-            screenshotProtectionEnabled = preferences[SCREENSHOT_PROTECTION_KEY] ?: true,
+            screenshotProtectionEnabled = preferences[SCREENSHOT_PROTECTION_KEY] ?: false, // 防截屏默认关闭（富江改造）
             clipboardAutoClearSeconds = preferences[CLIPBOARD_AUTO_CLEAR_SECONDS_KEY] ?: 0,
             dynamicColorEnabled = preferences[DYNAMIC_COLOR_ENABLED_KEY] ?: true,
             bottomNavVisibility = BottomNavVisibility(

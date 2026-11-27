@@ -589,6 +589,8 @@ fun SimpleMainScreen(
     onNavigateToSecurityQuestion: () -> Unit = {},
     onNavigateToMasterPasswordLocking: () -> Unit = {},
     onNavigateToSyncBackup: () -> Unit = {},
+    onOpenWebDavBackup: () -> Unit = {}, // 富江改造：直接打开 WebDAV 同步
+    onPullTriggerWebDavSync: () -> Unit = {}, // 富江改造：下拉=WebDAV同步
     onNavigateToAutofill: () -> Unit = {},
     onNavigateToPasskeySettings: () -> Unit = {},
     onNavigateToBottomNavSettings: () -> Unit = {},
@@ -2190,7 +2192,8 @@ fun SimpleMainScreen(
                         onEditPassword = handlePasswordEditOpen
                         ,
                         showStandaloneSettingsEntry = shouldHideBottomNavigation,
-                        onOpenStandaloneSettings = onNavigateToStandaloneSettings
+                        onOpenStandaloneSettings = onNavigateToStandaloneSettings,
+                        onPullTriggerWebDavSync = onPullTriggerWebDavSync // 富江改造：下拉=WebDAV同步
                     )
                 }
                 BottomNavItem.Authenticator -> {

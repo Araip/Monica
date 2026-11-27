@@ -92,8 +92,7 @@ fun SyncBackupScreen(
                     Setting.FOLDER_BACKUP.summary(), onNavigateToFolderBackup)
                 SyncBackupItem(Icons.Default.Cloud, Setting.WEBDAV_BACKUP,
                     Setting.WEBDAV_BACKUP.summary(), onNavigateToWebDav)
-                SyncBackupItem(Icons.Default.CloudSync, Setting.ONEDRIVE_BACKUP_TITLE,
-                    Setting.ONEDRIVE_BACKUP_TITLE.summary(), onNavigateToOneDrive)
+                // OneDrive 已删除（富江改造）
                 SyncBackupItem(Icons.Default.CloudSync, Setting.SYNC_BACKUP_BITWARDEN_SYNC_TITLE,
                     Setting.SYNC_BACKUP_BITWARDEN_SYNC_TITLE.summary(), onNavigateToBitwarden,
                     enabled = isPlusActivated, badge = if (isPlusActivated) null else "Plus")

@@ -101,7 +101,8 @@ internal fun PasswordTabPane(
     onEditPassword: (Long) -> Unit,
     showStandaloneSettingsEntry: Boolean,
     onOpenStandaloneSettings: () -> Unit,
-    onTrashSelectionModeChange: (Boolean) -> Unit = {}
+    onTrashSelectionModeChange: (Boolean) -> Unit = {},
+    onPullTriggerWebDavSync: () -> Unit = {} // 富江改造：下拉触发 WebDAV 同步
 ) {
     val appSettings by settingsViewModel.settings.collectAsState()
 
@@ -152,7 +153,8 @@ internal fun PasswordTabPane(
                 onOpenBillingAddress = onNavigateToBillingAddressDetail,
                 onOpenNote = onNavigateToAddNote,
                 onOpenPasskey = onNavigateToPasskeyDetail
-            )
+            ),
+            onPullTriggerWebDavSync = onPullTriggerWebDavSync // 富江改造
         )
     }
 

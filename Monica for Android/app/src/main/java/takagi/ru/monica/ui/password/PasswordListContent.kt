@@ -337,7 +337,8 @@ fun PasswordListContent(
     onScanFidoQr: () -> Unit = {},
     showStandaloneSettingsEntry: Boolean = false,
     onOpenStandaloneSettings: () -> Unit = {},
-    aggregateConfig: PasswordListAggregateConfig? = null
+    aggregateConfig: PasswordListAggregateConfig? = null,
+    onPullTriggerWebDavSync: () -> Unit = {} // 富江改造：下拉改为触发 WebDAV 同步
 ) {
     val nativeFilter by viewModel.categoryFilter.collectAsState()
     val nativeScope = takagi.ru.monica.keepass.KeePassPasswordNativeScope.from(nativeFilter)
@@ -873,7 +874,7 @@ fun PasswordListContent(
         syncTriggerDistance = syncTriggerDistance,
         maxDragDistance = maxDragDistance,
         bitwardenRepository = bitwardenRepository,
-        onSearchTriggered = { isSearchExpanded = true }
+        onSearchTriggered = onPullTriggerWebDavSync // 富江改造：下拉不再展开搜索，改为 WebDAV 同步
     )
     
     // 添加单项删除对话框状态

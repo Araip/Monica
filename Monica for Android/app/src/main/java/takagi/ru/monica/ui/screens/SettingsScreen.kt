@@ -329,8 +329,8 @@ fun SettingsScreen(
     val showMonicaPlusCard = !settings.isPlusActivated
     val showSecurityAnalysisCard = settingsSearchQuery.isBlank()
     val showMasterPasswordLockingItem = true
-    val showScreenshotProtectionItem = true
-    val showPermissionManagementItem = true
+    val showScreenshotProtectionItem = false // 防截屏开关已删除（富江改造）
+    val showPermissionManagementItem = false // 权限管理已删除（富江改造）
     val showSecuritySection = true
     val showSyncBackupItem = true
     val showAutofillItem = true
@@ -346,7 +346,7 @@ fun SettingsScreen(
     val showPageCustomizationItem = true
     val showAppearanceSection = true
     val showVersionItem = true
-    val showUpdateCheckItem = true
+    val showUpdateCheckItem = false // 检查更新已删除（富江改造）
     val showPreviewFeaturesItem = true
     val showDeveloperSettingsItem = true
     val securityItemCount = 3
@@ -738,14 +738,8 @@ fun SettingsScreen(
                             )
                         )
                     }
-                    SettingsItemWithSwitch(
-                        icon = Icons.Default.Update,
-                        setting = Setting.UPDATE_AUTO_CHECK,
-                        checked = updateState.preferences.autoCheckEnabled,
-                        enabled = updateState.loaded,
-                        onCheckedChange = { updateController?.setAutoCheckEnabled(it) },
-                        sectionShape = settingsSectionItemShape(2, aboutItemCount),
-                    )
+                    // 自动检查更新已删除（富江改造）
+                    // SettingsItemWithSwitch(update auto check) REMOVED
                 }
             }
             

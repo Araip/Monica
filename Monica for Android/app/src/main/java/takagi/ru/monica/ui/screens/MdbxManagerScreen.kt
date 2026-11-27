@@ -147,8 +147,9 @@ fun MdbxManagerScreen(
     onNavigateToLocalOpen: () -> Unit,
     onNavigateToWebDavCreate: () -> Unit,
     onNavigateToWebDavOpen: () -> Unit,
-    onNavigateToOneDriveCreate: () -> Unit,
-    onNavigateToOneDriveOpen: () -> Unit
+    // OneDrive 已移除（富江改造）
+    onNavigateToOneDriveCreate: () -> Unit = {},
+    onNavigateToOneDriveOpen: () -> Unit = {}
 ) {
     val strings = rememberScreenStrings()
     val context = LocalContext.current
@@ -1203,15 +1204,14 @@ internal fun MdbxManagerHubPage(
                 style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
         }
         item {
-            MdbxActionGroup(
+                    MdbxActionGroup(
                 title = strings.get(R.string.storage_location),
                 actions = listOf(
                     MdbxAction(Icons.Default.Storage, strings.get(R.string.mdbx_ui_local_databases),
                         onOpenLocal, strings.get(R.string.mdbx_ui_database_count, localCount)),
                     MdbxAction(Icons.Default.CloudSync, "WebDAV",
-                        onOpenWebDav, strings.get(R.string.mdbx_ui_database_count, webDavCount)),
-                    MdbxAction(Icons.Default.Cloud, "OneDrive",
-                        onOpenOneDrive, strings.get(R.string.mdbx_ui_database_count, oneDriveCount))
+                        onOpenWebDav, strings.get(R.string.mdbx_ui_database_count, webDavCount))
+                    // OneDrive 入口已移除（富江改造）
                 )
             )
         }
