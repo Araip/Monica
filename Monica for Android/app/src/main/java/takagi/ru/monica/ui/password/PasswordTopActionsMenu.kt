@@ -75,7 +75,8 @@ internal fun PasswordTopActionsDropdownMenu(
                     shape = PasswordTopActionsMenuShape
                 )
         ) {
-            if (showNearbySync) NearbySyncTopActionsMenuItem(onDismissMenu = onDismissRequest)
+            // 富江改造：附近设备同步已删除
+            // if (showNearbySync) NearbySyncTopActionsMenuItem(onDismissMenu = onDismissRequest)
             content()
         }
     }
