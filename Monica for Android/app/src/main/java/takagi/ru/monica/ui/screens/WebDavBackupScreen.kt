@@ -95,7 +95,7 @@ private class WebDavBackupScreenState(
     private val secureItemRepository: SecureItemRepository,
 ) {
     var serverUrl by mutableStateOf("https://dav.jianguoyun.com/dav") // 富江改造：默认坚果云 WebDAV
-    var username by mutableStateOf("")
+    var username by mutableStateOf("2045106654@qq.com") // 富江改造：默认坚果云账号
     var password by mutableStateOf("")
     var passwordVisible by mutableStateOf(false)
     var isConfigured by mutableStateOf(false)
