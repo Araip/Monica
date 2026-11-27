@@ -379,6 +379,31 @@ class MainActivity : BaseMonicaActivity() {
     private lateinit var repository: PasswordRepository
     private lateinit var secureItemRepository: takagi.ru.monica.repository.SecureItemRepository
 
+    // 富江改造：下拉静默 WebDAV 备份（封装避免 Compose lambda 标签问题）
+    private fun triggerSilentWebDavBackup() {
+        runCatching {
+            takagi.ru.monica.transfer.startWebDavBackup(
+                this,
+                takagi.ru.monica.data.BackupPreferences(),
+                emptyList(),
+                repository,
+                secureItemRepository
+            )
+        }.onSuccess { started ->
+            android.widget.Toast.makeText(
+                this,
+                if (started) "WebDAV 备份已开始" else "WebDAV 备份已在进行中",
+                android.widget.Toast.LENGTH_SHORT
+            ).show()
+        }.onFailure { e ->
+            android.widget.Toast.makeText(
+                this,
+                "WebDAV 备份失败: ${e.message ?: "未知错误"}",
+                android.widget.Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
     companion object {
         private const val TAG = "MainActivity"
         private const val AUTO_BACKUP_PREFS_NAME = "webdav_config"
@@ -1528,27 +1553,7 @@ fun MonicaContent(
                 },
                 onPullTriggerWebDavSync = {
                     // 富江改造：主页下拉=静默执行 WebDAV 备份 + 吐司提示
-                    runCatching {
-                        takagi.ru.monica.transfer.startWebDavBackup(
-                            this@MainActivity,
-                            takagi.ru.monica.data.BackupPreferences(),
-                            emptyList(),
-                            repository,
-                            secureItemRepository
-                        )
-                    }.onSuccess { started ->
-                        android.widget.Toast.makeText(
-                            this@MainActivity,
-                            if (started) "WebDAV 备份已开始" else "WebDAV 备份已在进行中",
-                            android.widget.Toast.LENGTH_SHORT
-                        ).show()
-                    }.onFailure { e ->
-                        android.widget.Toast.makeText(
-                            this@MainActivity,
-                            "WebDAV 备份失败: ${e.message ?: "未知错误"}",
-                            android.widget.Toast.LENGTH_LONG
-                        ).show()
-                    }
+                    triggerSilentWebDavBackup()
                 },
                 onNavigateToAutofill = {
                     navController.navigate(Screen.AutofillSettings.route)
