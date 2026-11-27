@@ -93,7 +93,7 @@ fun KeepassWebDavBrowserBottomSheet(
     val webDavHelper = remember { WebDavHelper(context) }
 
     var serverUrl by remember { mutableStateOf("https://dav.jianguoyun.com/dav") } // 富江改造：默认坚果云 WebDAV
-    var username by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("2045106654@qq.com") } // 富江改造：默认坚果云账号
     var webDavPassword by remember { mutableStateOf("") }
     var showWebDavPassword by remember { mutableStateOf(false) }
     var currentPath by remember { mutableStateOf("") }
