@@ -101,12 +101,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mapfile -t apks < <(find app/build/outputs/apk -type f -iname '*.apk' | sort)
-          test "${#apks[@]}" -gt 0
-          for apk in "${apks[@]}"; do
+          apk_found=0
+          while IFS= read -r apk; do
+            [ -n "$apk" ] || continue
+            apk_found=1
             unzip -Z1 "$apk" | grep -qx 'lib/arm64-v8a/libmonica_rust_jni.so'
             unzip -Z1 "$apk" | grep -qx 'lib/armeabi-v7a/libmonica_rust_jni.so'
-          done
+          done < <(find app/build/outputs/apk -type f -iname '*.apk' | sort)
+          test "$apk_found" -eq 1
+          echo "APK generated:"
           ls -la app/build/outputs/apk/release/
 
       - name: Upload APK
