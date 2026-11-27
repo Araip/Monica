@@ -328,11 +328,6 @@ fun DeveloperSettingsScreen(
                         }
                     }
                 )
-                SettingsPanelRow(
-                    icon = Icons.Default.Science,
-                    setting = Setting.MDBX_FORMAT_TITLE,
-                    onClick = onNavigateToMdbx
-                )
                 // 显示会话状态
                 if (BuildConfig.DEBUG) {
                     val sessionUnlocked by SessionManager.isUnlocked.collectAsState()
