@@ -32,12 +32,7 @@ fun SyncBackupScreen(
     onNavigateToExportData: () -> Unit = {},
     onNavigateToImportData: () -> Unit = {},
     onNavigateToWebDav: () -> Unit = {},
-    onNavigateToFolderBackup: () -> Unit = {},
-    onNavigateToOneDrive: () -> Unit = {},
     onNavigateToLocalKeePass: () -> Unit = {},  // 本地 KeePass 数据库管理
-    onNavigateToMdbx: () -> Unit = {},
-    onNavigateToBitwarden: () -> Unit = {},  // Bitwarden 集成入口
-    onNavigateToLanSync: () -> Unit = {},
     isPlusActivated: Boolean = false
 ) {
     val scrollState = rememberScrollState()
@@ -80,22 +75,13 @@ fun SyncBackupScreen(
                 .verticalScroll(scrollState)
         ) {
             SyncBackupSection(title = stringResource(R.string.sync_backup_database_tools)) {
-                SyncBackupItem(Icons.Default.Storage, Setting.MDBX_UI_MANAGER_ENTRY_TITLE,
-                    Setting.MDBX_UI_MANAGER_ENTRY_TITLE.summary(), onNavigateToMdbx)
                 SyncBackupItem(Icons.Default.Key, Setting.LOCAL_KEEPASS_DATABASE,
                     Setting.LOCAL_KEEPASS_DATABASE.summary(), onNavigateToLocalKeePass)
             }
             SyncBackupSection(title = stringResource(R.string.sync_backup_common_sync)) {
-                SyncBackupItem(Icons.Default.Wifi, Setting.LAN_TITLE,
-                    Setting.LAN_TITLE.summary(), onNavigateToLanSync)
-                SyncBackupItem(Icons.Default.Folder, Setting.FOLDER_BACKUP,
-                    Setting.FOLDER_BACKUP.summary(), onNavigateToFolderBackup)
+                // 附近设备同步/文件夹备份/MDBX/Bitwarden 已删除（富江改造）
                 SyncBackupItem(Icons.Default.Cloud, Setting.WEBDAV_BACKUP,
                     Setting.WEBDAV_BACKUP.summary(), onNavigateToWebDav)
-                // OneDrive 已删除（富江改造）
-                SyncBackupItem(Icons.Default.CloudSync, Setting.SYNC_BACKUP_BITWARDEN_SYNC_TITLE,
-                    Setting.SYNC_BACKUP_BITWARDEN_SYNC_TITLE.summary(), onNavigateToBitwarden,
-                    enabled = isPlusActivated, badge = if (isPlusActivated) null else "Plus")
             }
             SyncBackupSection(title = stringResource(R.string.sync_backup_import_export_low_freq)) {
                 SyncBackupItem(Icons.Default.Download, Setting.EXPORT_DATA,
