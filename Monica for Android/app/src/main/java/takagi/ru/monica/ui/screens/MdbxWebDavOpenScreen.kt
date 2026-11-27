@@ -56,7 +56,7 @@ fun MdbxWebDavOpenScreen(
     val webDavHelper = remember { WebDavHelper(context) }
     val savedConfig = remember { webDavHelper.getCurrentConfig() }
 
-    var serverUrl by remember { mutableStateOf(savedConfig?.serverUrl ?: "") }
+    var serverUrl by remember { mutableStateOf(savedConfig?.serverUrl ?: "https://dav.jianguoyun.com/dav") } // 富江改造：默认坚果云 WebDAV
     var username by remember { mutableStateOf(savedConfig?.username ?: "") }
     var webDavPassword by remember { mutableStateOf(webDavHelper.getCurrentPasswordForEdit()) }
     var showWebDavPassword by remember { mutableStateOf(false) }
